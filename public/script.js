@@ -35,7 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/api/coin-info?coin=${coin}`);
             const data = await response.json();
 
-            currentValueElement.textContent = `Valor Atual: ${data.price.USD}`;
+            currentValueElement.textContent = `Current Value: ${data.price.USD} $`;
+            currentValueElement.className = 'blue-text'; // Adiciona uma classe para aplicar estilos
+
 
             if (chart) {
                 chart.destroy(); // Destrua o gráfico anterior para criar um novo.
@@ -57,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     labels: chartDates,
                     datasets: [
                         {
-                            label: 'Histórico de Preço',
+                            label: 'Price History',
                             data: chartValues,
                             borderColor: 'blue',
                             borderWidth: 2,
@@ -75,35 +77,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Função para carregar as notícias mais relevantes sobre a criptomoeda
-    const loadCryptoNews = async (coin) => {
-        try {
-            const apiKey = '9caa56cc7d804c50a3ab4ab5eeb534f4';
-            const newsUrl = `https://newsapi.org/v2/everything?q=${coin}&from=${getPastDate()}&sortBy=relevancy&apiKey=${apiKey}`;
+// Função para carregar as notícias mais relevantes sobre a criptomoeda
+const loadCryptoNews = async (coin) => {
+    try {
+        const response = await fetch(`/api/crypto-news?coin=${coin}`);
+        const data = await response.json();
 
-            const response = await fetch(newsUrl);
-            const data = await response.json();
+        const newsList = document.getElementById('news-list');
+        newsList.innerHTML = ''; // Limpe a lista de notícias existente.
 
-            const newsList = document.getElementById('news-list');
-            newsList.innerHTML = ''; // Limpe a lista de notícias existente.
+        for (let i = 0; i < 7; i++) {
+            const article = data[i];
 
-            for (let i = 0; i < 5; i++) {
-                const article = data.articles[i];
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `<a href="${article.url}" target="_blank">${article.title}</a>`;
-                newsList.appendChild(listItem);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar notícias:', error);
+            // Crie um elemento para conter a imagem e o título
+            const newsItem = document.createElement('li');
+            newsItem.className = 'news-item'; // Adicione uma classe para aplicar estilos
+
+            // Crie um elemento para a imagem da notícia
+            const newsImage = document.createElement('img');
+            newsImage.src = article.urlToImage; // Define a imagem da notícia
+            newsImage.alt = 'Imagem da Notícia'; // Alt text para acessibilidade
+            newsImage.style.maxWidth = '450px'; // Limita a largura máxima
+            newsImage.style.maxHeight = '450px'; // Limita a altura máxima
+            newsImage.style.objectFit = 'contain'; // Redimensiona a imagem sem cortar
+
+            // Crie um elemento para o título da notícia
+            const newsTitleContainer = document.createElement('div');
+            newsTitleContainer.className = 'title-container'; // Adicione uma classe para aplicar estilos
+            const newsTitle = document.createElement('a');
+            newsTitle.href = article.url;
+            newsTitle.target = '_blank';
+            newsTitle.textContent = article.title;
+
+            // Adicione a imagem e o título ao elemento da notícia
+            newsItem.appendChild(newsImage);
+            newsTitleContainer.appendChild(newsTitle);
+            newsItem.appendChild(newsTitleContainer);
+
+            // Adicione o elemento da notícia à lista
+            newsList.appendChild(newsItem);
         }
-    };
-
-    // Função para obter a data de 72 horas atrás no formato "YYYY-MM-DD"
-    function getPastDate() {
-        const today = new Date();
-        today.setHours(today.getHours() - 72); // Subtrai 72 horas.
-        return today.toISOString().split('T')[0];
+    } catch (error) {
+        console.error('Erro ao buscar notícias:', error);
     }
+};
+
+
+
 
     // Após carregar os dados da criptomoeda, carregue as notícias relevantes
     selectElement.addEventListener('change', () => {
