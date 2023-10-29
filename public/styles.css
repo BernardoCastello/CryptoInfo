@@ -10,9 +10,14 @@ body {
 }
 
 h1 {
-    color: #fff; /* Título em cor clara */
+    color: #0070c0; /* Título em cor azul */
 }
-
+h2{
+    color: #0070c0; /* Título em cor azul */
+}
+h3 {
+    color: #0070c0; /* Título em cor azul */
+}
 .crypto-list {
     margin: 20px auto;
     width: 80%;
@@ -39,7 +44,7 @@ h1 {
 #chart {
     width: 100%;
     width: 1500px;
-    height: 1200px;
+    height: 120px;
     align-items: center;
 }
 
@@ -66,4 +71,8 @@ h1 {
 
 #news-list a:hover {
     text-decoration: underline;
+}
+
+.blue-text {
+    color: #0070c0;
 }
