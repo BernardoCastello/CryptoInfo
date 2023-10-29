@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CryptoCompare API Demo</title>
+    <title>CryptoInfo-API</title>
     <!-- Inclua a biblioteca Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>CryptoCompare API Demo</h1>
+    <h1>CryptoInfo</h1>
+    <h3>Everything Aabout Cryptocurrencies In Recent Days</h3>
     <div class="crypto-list">
-        <label for="crypto-select">Selecione uma criptomoeda:</label>
+        <label for="crypto-select">Select a cryptocurrency::</label>
         <select id="crypto-select">
             <!-- Options serão preenchidas dinamicamente por JavaScript -->
         </select>
         <div class="crypto-info">
-            <p id="current-value">Valor Atual: Aguardando seleção...</p>
+            <p id="current-value">Current Value: Waiting for selection...</p>
             <canvas id="chart"></canvas>
         </div>
     </div>
     <div id="crypto-news">
-        <h2>Notícias sobre a Criptomoeda</h2>
+        <h2>Cryptocurrency News</h2>
         <ul id="news-list"></ul>
     </div>
     <canvas id="chart" class="crypto-chart"></canvas>
