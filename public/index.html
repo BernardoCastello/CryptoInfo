@@ -11,7 +11,7 @@
     <h1>CryptoInfo</h1>
     <h3>Everything About Cryptocurrencies In Recent Days</h3>
     <div class="crypto-list">
-        <label for="crypto-select">Select a cryptocurrency::</label>
+        <label for="crypto-select">Select a cryptocurrency:</label>
         <select id="crypto-select">
             <!-- Options serão preenchidas dinamicamente por JavaScript -->
         </select>
@@ -22,9 +22,13 @@
     </div>
     <div id="crypto-news">
         <h2>Cryptocurrency News</h2>
+        <div class="pagination">
+            <button id="prev-btn">Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+        </div>
         <ul id="news-list"></ul>
     </div>
-    <canvas id="chart" class="crypto-chart"></canvas>
     <script src="Chart.min.js"></script>
     <script src="script.js"></script>
 </body>
