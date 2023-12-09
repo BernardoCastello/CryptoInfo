@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentValueElement.textContent = `Current Value: ${data.price.USD} $`;
             currentValueElement.className = 'blue-text'; // Adiciona uma classe para aplicar estilos
 
-
             if (chart) {
                 chart.destroy(); // Destrua o gráfico anterior para criar um novo.
             }
@@ -77,65 +76,91 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-// Função para carregar as notícias mais relevantes sobre a criptomoeda
-const loadCryptoNews = async (coin) => {
-    try {
-        const response = await fetch(`/api/crypto-news?coin=${coin}`);
-        const data = await response.json();
+    let currentPage = 0;
+    const pageSize = 4; // Quantidade de notícias por página
 
-        const newsList = document.getElementById('news-list');
-        newsList.innerHTML = ''; // Limpe a lista de notícias existente.
+    // Função para carregar as notícias mais relevantes sobre a criptomoeda
+    const loadCryptoNews = async (coin, page = 0) => {
+        try {
+            const response = await fetch(`/api/crypto-news?coin=${coin}`);
+            const data = await response.json();
 
-        for (let i = 0; i < 7; i++) {
-            const article = data[i];
+            const newsList = document.getElementById('news-list');
+            newsList.innerHTML = ''; // Limpa a lista de notícias existente.
 
-            // Crie um elemento para conter a imagem e o título
-            const newsItem = document.createElement('li');
-            newsItem.className = 'news-item'; // Adicione uma classe para aplicar estilos
+            const startIdx = page * pageSize;
+            const endIdx = startIdx + pageSize;
+            const paginatedData = data.slice(startIdx, endIdx);
 
-            // Crie um elemento para a imagem da notícia
-            const newsImage = document.createElement('img');
-            newsImage.src = article.urlToImage; // Define a imagem da notícia
-            newsImage.alt = 'Imagem da Notícia'; // Alt text para acessibilidade
-            newsImage.style.maxWidth = '450px'; // Limita a largura máxima
-            newsImage.style.maxHeight = '450px'; // Limita a altura máxima
-            newsImage.style.objectFit = 'contain'; // Redimensiona a imagem sem cortar
+            for (let i = 0; i < paginatedData.length; i++) {
+                const article = paginatedData[i];
+                const newsItem = document.createElement('li');
+                newsItem.className = 'news-item'; // Adiciona uma classe para aplicar estilos
 
-            // Crie um elemento para o título da notícia
-            const newsTitleContainer = document.createElement('div');
-            newsTitleContainer.className = 'title-container'; // Adicione uma classe para aplicar estilos
-            const newsTitle = document.createElement('a');
-            newsTitle.href = article.url;
-            newsTitle.target = '_blank';
-            newsTitle.textContent = article.title;
+                const newsImage = document.createElement('img');
+                newsImage.src = article.urlToImage;
+                newsImage.alt = 'Imagem da Notícia';
+                newsImage.style.maxWidth = '450px';
+                newsImage.style.maxHeight = '450px';
+                newsImage.style.objectFit = 'contain';
 
-            // Adicione a imagem e o título ao elemento da notícia
-            newsItem.appendChild(newsImage);
-            newsTitleContainer.appendChild(newsTitle);
-            newsItem.appendChild(newsTitleContainer);
+                const newsTitleContainer = document.createElement('div');
+                newsTitleContainer.className = 'title-container';
 
-            // Adicione o elemento da notícia à lista
-            newsList.appendChild(newsItem);
+                const newsTitle = document.createElement('a');
+                newsTitle.href = article.url;
+                newsTitle.target = '_blank';
+                newsTitle.textContent = article.title;
+
+                newsItem.appendChild(newsImage);
+                newsTitleContainer.appendChild(newsTitle);
+                newsItem.appendChild(newsTitleContainer);
+
+                newsList.appendChild(newsItem);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar notícias:', error);
         }
-    } catch (error) {
-        console.error('Erro ao buscar notícias:', error);
-    }
-};
+    };
 
-
-
+    const updateNewsPage = (coin, direction) => {
+        if (direction === 'prev') {
+            currentPage = Math.max(0, currentPage - 1);
+        } else if (direction === 'next') {
+            currentPage++;
+        }
+        loadCryptoNews(coin, currentPage);
+    };
 
     // Após carregar os dados da criptomoeda, carregue as notícias relevantes
     selectElement.addEventListener('change', () => {
         const selectedCoin = selectElement.value;
         if (selectedCoin) {
-            loadCryptoData(selectedCoin);  // Carregua os dados da Cryptomoeda
-            loadCryptoNews(selectedCoin); // Carregua as notícias ao selecionar uma criptomoeda.
+            loadCryptoData(selectedCoin);
+            loadCryptoNews(selectedCoin);
         } else {
             currentValueElement.textContent = 'Aguardando seleção...';
             if (chart) {
                 chart.destroy();
             }
+        }
+    });
+
+    // Botões de navegação para as notícias
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    prevBtn.addEventListener('click', () => {
+        const selectedCoin = selectElement.value;
+        if (selectedCoin && currentPage > 0) {
+            updateNewsPage(selectedCoin, 'prev');
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        const selectedCoin = selectElement.value;
+        if (selectedCoin) {
+            updateNewsPage(selectedCoin, 'next');
         }
     });
 
